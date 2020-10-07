@@ -8,7 +8,7 @@ import { USER_ROLES, UserOptions } from '../../../auth/interfaces';
   selector: 'app-dialog',
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DialogComponent {
   public readonly form: FormGroup;
@@ -30,8 +30,8 @@ export class DialogComponent {
   private getOptions(): FormlyFormOptions {
     return {
       formState: {
-        awesomeIsForced: false,
-      },
+        awesomeIsForced: false
+      }
     };
   }
 
@@ -42,61 +42,14 @@ export class DialogComponent {
   private getFields(): FormlyFieldConfig[] {
     return [
       {
-        key: 'firstName',
+        key: 'order',
         type: 'input',
         templateOptions: {
-          label: 'First Name',
-          placeholder: 'Enter your first name',
-          required: true,
-        },
-      },
-      {
-        key: 'phoneNumber',
-        type: 'input',
-        templateOptions: {
-          label: 'Phone Number',
-          placeholder: 'Enter your number',
-          required: true,
-        },
-      },
-      {
-        key: 'email',
-        type: 'input',
-        templateOptions: {
-          label: 'Email',
-          placeholder: 'Enter your email',
-          type: 'email',
-          required: true,
-        },
-      },
-      {
-        key: 'password',
-        type: 'input',
-        templateOptions: {
-          label: 'Password',
-          placeholder: 'Enter your password',
-          type: 'password',
-          required: true,
-        },
-      },
-      {
-        key: 'birthday',
-        type: 'datepicker',
-        templateOptions: {
-          label: 'Birthday date',
-          placeholder: 'Choose your birthday',
-          required: true,
-        },
-      },
-      {
-        key: 'role',
-        type: 'select',
-        templateOptions: {
-          label: 'Role',
-          options: USER_ROLES.map((role) => ({ value: role, label: role.toUpperCase() })),
-          required: true,
-        },
-      },
+          label: 'Your order',
+          placeholder: 'Enter your order',
+          required: true
+        }
+      }
     ];
   }
 
@@ -108,7 +61,8 @@ export class DialogComponent {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
     } else {
-      this.dialogRef.close(this.form.value);
+      // console.log('value', { ...this.form.value, status: 'in progress' });
+      this.dialogRef.close({ ...this.form.value, status: 'in progress', id: new Date().getTime() });
     }
   }
 }

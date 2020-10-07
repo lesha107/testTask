@@ -1,30 +1,23 @@
 import { Component } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
-import { ADMIN_ROUTES } from 'src/app/admin/routes/admin-routes';
-import { UserService } from 'src/app/admin/services';
 import { AuthService } from 'src/app/auth/services/auth/auth.service';
 import { CORE_ROUTES } from '../../../core/routes';
 import { SignInWithPasswordArgsType, SignInWithPasswordResponseType } from '../../interfaces';
-@UntilDestroy()
+
 @Component({
-  selector: 'app-sign-in',
-  templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.scss']
+  selector: 'app-sign-up',
+  templateUrl: './sign-up.component.html',
+  styleUrls: ['./sign-up.component.scss']
 })
-export class SignInComponent {
+export class SignUpComponent {
   public readonly fields: FormlyFieldConfig[];
   public readonly form: FormGroup;
   public readonly model: unknown;
   public readonly options: FormlyFormOptions;
 
-  constructor(
-    private readonly _router: Router,
-    private readonly _authService: AuthService,
-    private readonly _userService: UserService
-  ) {
+  constructor(private readonly _router: Router, private readonly _authService: AuthService) {
     this.fields = this.getFormlyFields();
     this.form = this.getForm();
     this.options = this.getOptions();
@@ -38,6 +31,7 @@ export class SignInComponent {
         type: 'input',
         templateOptions: {
           label: 'Email',
+          type: 'email',
           placeholder: 'Write email...',
           required: true
         }
@@ -49,8 +43,27 @@ export class SignInComponent {
           label: 'Password',
           placeholder: 'Write password...',
           type: 'password',
-          required: true,
-          asdsadass: 'asdasdsad'
+          required: true
+        }
+      },
+      {
+        key: 'saller',
+        type: 'checkbox',
+        templateOptions: {
+          label: 'Продавец'
+        },
+        expressionProperties: {
+          'templateOptions.disabled': 'model.client'
+        }
+      },
+      {
+        key: 'client',
+        type: 'checkbox',
+        templateOptions: {
+          label: 'Клиент'
+        },
+        expressionProperties: {
+          'templateOptions.disabled': 'model.saller'
         }
       }
     ];
@@ -64,25 +77,15 @@ export class SignInComponent {
     return {};
   }
 
-  async signIn(): Promise<void> {
+  async signUp(): Promise<void> {
     try {
       if (!this.form.valid) {
         return;
       }
-      let user = await this.signInWithPassword(this.form.value);
-      let role;
-      console.log('USER', user);
-      this._userService
-        .getUsers()
-        .pipe(untilDestroyed(this))
-        .subscribe(async x => {
-          let currentUser: any = x.find(x => x.id === user.uid);
-          role = currentUser.saller ? 'saller' : 'client';
-          console.log('her', { user, role });
-          await this._router.navigateByUrl(
-            role === 'sallers' ? CORE_ROUTES.ADMIN.fullPath : CORE_ROUTES.ADMIN.fullPath
-          );
-        });
+      const data = await this._authService.createUser(this.form.value);
+      await this._authService.updateUsersData({ data, options: this.form.value });
+      // await this.signInWithPassword(this.form.value);
+      //  await this._router.navigateByUrl(CORE_ROUTES.ADMIN.fullPath);
     } catch (er) {}
   }
 

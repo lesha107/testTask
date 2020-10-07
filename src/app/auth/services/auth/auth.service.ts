@@ -7,29 +7,36 @@ import {
   CreateUserArgsType,
   CreateUserResponeType,
   UpdateUserArgsInterface,
-  UserOptions,
+  UserOptions
 } from '../../interfaces';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, switchMap } from 'rxjs/operators';
+import { filter, switchMap, tap } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import * as firebase from 'firebase';
+import { UserService } from 'src/app/admin/services';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthService {
-  private readonly currentUser$: BehaviorSubject<firebase.User>;
+  public readonly currentUser$: BehaviorSubject<firebase.User>;
   public readonly userOptions$: Observable<UserOptions>;
 
   constructor(
     private readonly _afAuth: AngularFireAuth,
     private readonly _afs: AngularFirestore,
-    private readonly _toastrService: ToastrService
+    private readonly _toastrService: ToastrService,
+    private readonly _userService: UserService
   ) {
     this.currentUser$ = new BehaviorSubject(null);
     this.userOptions$ = this.currentUser$.pipe(
-      filter((user) => !!user?.uid),
-      switchMap((user) => this._afs.collection('users').doc<UserOptions>(user.uid).valueChanges())
+      filter(user => !!user?.uid),
+      switchMap(user =>
+        this._afs
+          .collection('users')
+          .doc<UserOptions>(user.uid)
+          .valueChanges()
+      )
     );
   }
 
@@ -43,8 +50,7 @@ export class AuthService {
       const credential = await this._afAuth.signInWithEmailAndPassword(email, password);
 
       this.currentUser$.next(credential.user);
-
-      return credential;
+      return credential.user;
     } catch (err) {
       return null;
     }
@@ -64,7 +70,10 @@ export class AuthService {
   async updateUsersData(args: UpdateUserArgsInterface): Promise<void> {
     try {
       const { data, options } = args;
-      const user = await this._afs.collection('users').doc(data.user.uid).set(options);
+      const user = await this._afs
+        .collection('users')
+        .doc(data.user.uid)
+        .set(options);
 
       this._toastrService.success('User Updated');
     } catch (err) {}
