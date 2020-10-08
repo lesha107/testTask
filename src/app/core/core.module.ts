@@ -4,7 +4,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormlyModule } from '@ngx-formly/core';
 import { ToastrModule } from 'ngx-toastr';
 import { ReactiveFormsModule } from '@angular/forms';
-
 import { CoreComponent } from 'src/app/core/components/core.component';
 import { CoreRoutingModule } from 'src/app/core/routes';
 import { FORMLY_CONFIGS } from 'src/app/core/settings/configs';
@@ -27,7 +26,6 @@ const CORE_IMPORTS = [
   FormlyModule.forRoot(FORMLY_CONFIGS),
   ToastrModule.forRoot(),
   ReactiveFormsModule,
-  // FormlyMaterialModule,
 ];
 
 @NgModule({

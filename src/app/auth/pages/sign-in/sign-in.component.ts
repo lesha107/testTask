@@ -6,13 +6,12 @@ import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { ADMIN_ROUTES } from 'src/app/admin/routes/admin-routes';
 import { UserService } from 'src/app/admin/services';
 import { AuthService } from 'src/app/auth/services/auth/auth.service';
-import { CORE_ROUTES } from '../../../core/routes';
 import { SignInWithPasswordArgsType, SignInWithPasswordResponseType } from '../../interfaces';
 @UntilDestroy()
 @Component({
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.scss']
+  styleUrls: ['./sign-in.component.scss'],
 })
 export class SignInComponent {
   public readonly fields: FormlyFieldConfig[];
@@ -38,21 +37,20 @@ export class SignInComponent {
         type: 'input',
         templateOptions: {
           label: 'Email',
-          placeholder: 'Write email...',
-          required: true
-        }
+          placeholder: 'Enter your email...',
+          required: true,
+        },
       },
       {
         key: 'password',
         type: 'input',
         templateOptions: {
           label: 'Password',
-          placeholder: 'Write password...',
+          placeholder: 'Enter your password...',
           type: 'password',
           required: true,
-          asdsadass: 'asdasdsad'
-        }
-      }
+        },
+      },
     ];
   }
 
@@ -69,19 +67,14 @@ export class SignInComponent {
       if (!this.form.valid) {
         return;
       }
-      let user = await this.signInWithPassword(this.form.value);
-      let role;
-      console.log('USER', user);
+      const user = await this.signInWithPassword(this.form.value);
       this._userService
         .getUsers()
         .pipe(untilDestroyed(this))
-        .subscribe(async x => {
-          let currentUser: any = x.find(x => x.id === user.uid);
-          role = currentUser.saller ? 'saller' : 'client';
-          console.log('her', { user, role });
-          await this._router.navigateByUrl(
-            role === 'sallers' ? CORE_ROUTES.ADMIN.fullPath : CORE_ROUTES.ADMIN.fullPath
-          );
+        .subscribe(async (users) => {
+          const currentUser: any = users.find((x) => x.id === user.uid);
+          const route = currentUser.saller ? ADMIN_ROUTES.SALLERS.fullPath : ADMIN_ROUTES.CLIENTS.fullPath;
+          await this._router.navigateByUrl(route);
         });
     } catch (er) {}
   }

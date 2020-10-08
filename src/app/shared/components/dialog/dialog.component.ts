@@ -2,13 +2,13 @@ import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
-import { USER_ROLES, UserOptions } from '../../../auth/interfaces';
+import { OrderOptions } from '../../../auth/interfaces';
 
 @Component({
   selector: 'app-dialog',
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogComponent {
   public readonly form: FormGroup;
@@ -16,7 +16,7 @@ export class DialogComponent {
   public readonly options: FormlyFormOptions;
   public readonly fields: FormlyFieldConfig[];
 
-  constructor(public dialogRef: MatDialogRef<DialogComponent>, @Inject(MAT_DIALOG_DATA) public data: UserOptions) {
+  constructor(public dialogRef: MatDialogRef<DialogComponent>, @Inject(MAT_DIALOG_DATA) public data: OrderOptions) {
     this.form = this.getForm();
     this.options = this.getOptions();
     this.model = this.getModel();
@@ -30,8 +30,8 @@ export class DialogComponent {
   private getOptions(): FormlyFormOptions {
     return {
       formState: {
-        awesomeIsForced: false
-      }
+        awesomeIsForced: false,
+      },
     };
   }
 
@@ -47,9 +47,18 @@ export class DialogComponent {
         templateOptions: {
           label: 'Your order',
           placeholder: 'Enter your order',
-          required: true
-        }
-      }
+          required: true,
+        },
+      },
+      {
+        key: 'price',
+        type: 'input',
+        templateOptions: {
+          label: 'Order price',
+          placeholder: 'Enter your price',
+          required: true,
+        },
+      },
     ];
   }
 
@@ -61,7 +70,6 @@ export class DialogComponent {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
     } else {
-      // console.log('value', { ...this.form.value, status: 'in progress' });
       this.dialogRef.close({ ...this.form.value, status: 'in progress', id: new Date().getTime() });
     }
   }

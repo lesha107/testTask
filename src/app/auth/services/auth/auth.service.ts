@@ -7,37 +7,36 @@ import {
   CreateUserArgsType,
   CreateUserResponeType,
   UpdateUserArgsInterface,
-  UserOptions
 } from '../../interfaces';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import * as firebase from 'firebase';
-import { UserService } from 'src/app/admin/services';
-
+export interface User {
+  uid: string;
+  email: string;
+}
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   public readonly currentUser$: BehaviorSubject<firebase.User>;
-  public readonly userOptions$: Observable<UserOptions>;
-
+  user$: Observable<any>;
   constructor(
     private readonly _afAuth: AngularFireAuth,
     private readonly _afs: AngularFirestore,
-    private readonly _toastrService: ToastrService,
-    private readonly _userService: UserService
+    private readonly _toastrService: ToastrService
   ) {
-    this.currentUser$ = new BehaviorSubject(null);
-    this.userOptions$ = this.currentUser$.pipe(
-      filter(user => !!user?.uid),
-      switchMap(user =>
-        this._afs
-          .collection('users')
-          .doc<UserOptions>(user.uid)
-          .valueChanges()
-      )
+    this.user$ = this._afAuth.authState.pipe(
+      switchMap((user) => {
+        if (user) {
+          return this._afs.doc(`users/${user.uid}`).valueChanges();
+        } else {
+          return of(null);
+        }
+      })
     );
+    this.currentUser$ = new BehaviorSubject(null);
   }
 
   public get user(): firebase.User {
@@ -70,10 +69,7 @@ export class AuthService {
   async updateUsersData(args: UpdateUserArgsInterface): Promise<void> {
     try {
       const { data, options } = args;
-      const user = await this._afs
-        .collection('users')
-        .doc(data.user.uid)
-        .set(options);
+      const user = await this._afs.collection('users').doc(data.user.uid).set(options);
 
       this._toastrService.success('User Updated');
     } catch (err) {}

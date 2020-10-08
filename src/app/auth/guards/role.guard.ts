@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { filter, map, take, tap } from 'rxjs/operators';
 import { AppToastrService } from 'src/app/core/services';
 import { APP_TOASTR_MESSAGES } from 'src/app/core/services/app-toastr/app-toastr-messages';
-import { UserOptions, UserRoleEnum } from '../interfaces';
 import { AuthService } from '../services';
 
 @Injectable({
@@ -16,12 +15,26 @@ export class RoleGuard implements CanActivate {
     private readonly _authService: AuthService,
     private readonly _router: Router
   ) {}
+  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
+    return this._authService.user$.pipe(
+      take(1),
+      filter((user) => !!user),
+      map((user) => {
+        const expectedRole = route.data.expectedRole;
 
-  canActivate(): Observable<boolean> {
-    return this._authService.userOptions$.pipe(
-      map((options: UserOptions) => options.role === UserRoleEnum.ADMIN),
-      tap((isAdmin) => {
-        if (!isAdmin) {
+        const roles = [];
+        if (user.saller) {
+          roles.push('saller');
+        }
+        if (user.client) {
+          roles.push('client');
+        }
+
+        return roles.includes(expectedRole);
+      }),
+      tap((role) => {
+        if (!role) {
+          this._router.navigateByUrl('auth');
           this._appToastrService.error(APP_TOASTR_MESSAGES.INVALID_ROLE, 'Auth');
         }
       })

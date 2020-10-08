@@ -3,7 +3,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { initFirestoreData } from 'src/app/utils/firebase/firestore';
-import { FirebaseUserOptions } from 'src/app/auth/interfaces';
+import { UserBase } from 'src/app/auth/interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +11,7 @@ import { FirebaseUserOptions } from 'src/app/auth/interfaces';
 export class UserService {
   constructor(private readonly _afs: AngularFirestore) {}
 
-  getUsers(): Observable<FirebaseUserOptions[]> {
+  getUsers(): Observable<UserBase[]> {
     return this._afs.collectionGroup('users').snapshotChanges().pipe(map(initFirestoreData));
   }
 }

@@ -13,7 +13,7 @@ export const firebaseConfig = environment.firebaseConfig;
 const FIREBASE_IMPORTS = [
   CommonModule,
   AngularFireModule.initializeApp(firebaseConfig),
-  AngularFirestoreModule.enablePersistence(), // this enable offline persistence
+  AngularFirestoreModule.enablePersistence(),
   AngularFireAuthModule,
 ];
 

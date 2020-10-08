@@ -1,7 +1,10 @@
 <div class="auth__form">
-  <ion-label>Login</ion-label>
+  <h2 class="material-text material-text-primary">Login</h2>
   <form [formGroup]="form">
     <formly-form [model]="model" [fields]="fields" [options]="options" [form]="form"></formly-form>
-    <button type="submit" mat-raised-button color="primary" (click)="signIn()">Submit</button>
+    <ion-item lines="none">
+      <button type="submit" mat-raised-button color="primary" (click)="signIn()">Sign in</button>
+      <a routerLink="/auth/sign-up" slot="end">Sign up?</a>
+    </ion-item>
   </form>
 </div>

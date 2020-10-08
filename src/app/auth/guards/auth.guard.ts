@@ -1,12 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { AppToastrService } from 'src/app/core/services';
 import { APP_TOASTR_MESSAGES } from 'src/app/core/services/app-toastr/app-toastr-messages';
 import { AuthService } from '../services';
-
-// Circular
 import { AUTH_ROUTES } from 'src/app/auth/routes/auth-routes';
 
 @Injectable({

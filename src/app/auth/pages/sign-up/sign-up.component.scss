@@ -1,3 +1,8 @@
+::ng-deep {
+  .display-flex {
+    display: flex;
+  }
+}
 .auth__form {
   display: flex;
   flex-direction: column;
@@ -6,5 +11,8 @@
   height: 100%;
   form {
     width: 30%;
+    a {
+      text-decoration: none;
+    }
   }
 }

@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 import { SHARED_COMPONENTS } from 'src/app/shared/components';
 import { FirebaseModule } from 'src/app/shared/firebase.module';
 import { MaterialModule } from 'src/app/shared/material.module';
-import { FormlyIonicModule } from '@ngx-formly/ionic';
+import { FormlyMaterialModule } from '@ngx-formly/material';
 import { IonicModule } from '@ionic/angular';
 
 const SHARED_DECLARATIONS = [...SHARED_COMPONENTS];
@@ -16,7 +16,7 @@ const SHARED_IMPORTS = [
   RouterModule,
   FormsModule,
   ReactiveFormsModule,
-  FormlyIonicModule,
+  FormlyMaterialModule,
   FirebaseModule,
   MaterialModule,
   FormlyModule,
